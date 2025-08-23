@@ -59,7 +59,7 @@
       "default": 70
     },
     "enableSplash": {
-      "type": "checkbox",
+      "type": "boolean",
       "label": "Enable Splash Effects",
       "description": "Show splash effects when raindrops hit the ground",
       "default": true
