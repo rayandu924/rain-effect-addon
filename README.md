@@ -1,43 +1,54 @@
-# 🌧️ Rain Effect Addon
+# 🌧️ Rain Effect - MyWallpaper Addon
 
-A realistic rain animation addon for MyWallpaper with customizable physics and visual effects.
+Un addon d'effet de pluie réaliste et hautement personnalisable pour MyWallpaper.
 
-## ✨ Features
+## ✨ Caractéristiques
 
-- **Realistic Rain Physics** - Natural falling motion with gravity
-- **Wind Simulation** - Configurable wind direction affecting rain angle  
-- **Splash Effects** - Particle effects when raindrops hit the ground
-- **Customizable Appearance** - Color, size, opacity, and intensity controls
-- **Performance Optimized** - Smooth animation with efficient rendering
+### 🎛️ Contrôles avancés
+- **Densité** : 10-200 gouttes (défaut: 80)
+- **Vitesse** : 0.5x-5x la vitesse normale (défaut: 2x)
+- **Direction du vent** : -30° à +30° (défaut: 0°)
+- **Couleur** : Sélecteur de couleur personnalisé (défaut: bleu ciel)
+- **Taille des gouttes** : 1-8px (défaut: 2px)
+- **Opacité** : 10%-100% (défaut: 70%)
+- **Effet Glow** : 0-10px d'intensité (défaut: 2px)
+- **Effets de splash** : Activé/désactivé (défaut: activé)
 
-## ⚙️ Configuration Options
+### 🌟 Effets visuels
+- Animation fluide à 60fps optimisée
+- Gouttes de pluie réalistes avec longueur variable
+- Effets de vent dynamiques
+- Splash effects au sol
+- Effets de glow personnalisables
+- Interface de contrôle élégante qui se cache automatiquement
 
-| Setting | Type | Description | Range | Default |
-|---------|------|-------------|-------|---------|
-| **Intensity** | Range | Number of raindrops | 10-200 | 80 |
-| **Speed** | Range | Fall speed multiplier | 0.5-5.0 | 2.0 |
-| **Drop Color** | Color | Raindrop color | Any hex color | #87CEEB |
-| **Drop Size** | Range | Size of raindrops | 1-8 px | 2 |
-| **Wind Direction** | Range | Wind angle effect | -30° to +30° | 0° |
-| **Opacity** | Range | Rain transparency | 10-100% | 70% |
-| **Enable Splash** | Checkbox | Show splash effects | On/Off | On |
+### 🎮 Utilisation
+1. Ouvrez `rain.html` dans votre navigateur
+2. Utilisez le bouton ⚙️ pour afficher/masquer les contrôles
+3. Ajustez les paramètres en temps réel
+4. L'interface se cache automatiquement après 5 secondes
 
-## 🎮 Usage
+### 🔧 Configuration technique
+- **Performance** : Optimisé pour les appareils modernes
+- **Compatibilité** : Tous navigateurs modernes avec support Canvas
+- **Ressources** : Utilisation CPU/GPU modérée
+- **Responsive** : S'adapte automatiquement à la taille de l'écran
 
-1. Add the Rain Effect addon to your MyWallpaper setup
-2. Adjust the settings to create your desired rain atmosphere:
-   - **Light drizzle**: Low intensity (20-40), slow speed (1.0)
-   - **Heavy storm**: High intensity (150+), fast speed (3.0+), wind effect
-   - **Gentle rain**: Medium settings with splash effects enabled
+### 📦 Installation
+1. Téléchargez tous les fichiers de l'addon
+2. Placez-les dans votre dossier d'addons MyWallpaper
+3. Sélectionnez l'addon dans l'interface MyWallpaper
 
-## 🔧 Technical Details
+### 🛠️ Personnalisation
+Tous les paramètres peuvent être ajustés en temps réel :
+- Interface intuitive avec curseurs et sélecteurs
+- Valeurs affichées en temps réel
+- Sauvegarde automatique des préférences (si supporté par MyWallpaper)
 
-- Pure JavaScript with HTML5 Canvas
-- No external dependencies
-- Responsive to window resizing
-- Optimized particle system with object pooling
-- Real-time settings updates via MessageAPI
+### 🚀 Performances
+- Utilise `requestAnimationFrame` pour une animation fluide
+- Gestion intelligente des particules
+- Optimisation automatique selon le nombre de gouttes
+- Effets visuels calculés efficacement
 
-## 📝 Version History
-
-- **1.0.0** - Initial release with full rain simulation
+Profitez de votre pluie personnalisée ! 🌧️✨

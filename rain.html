@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌧️ Rain Effect - MyWallpaper</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body, html {
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            background: transparent;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        #rainCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        .controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            min-width: 280px;
+            z-index: 1001;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .controls:hover {
+            background: rgba(0, 0, 0, 0.9);
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+        }
+
+        .control-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .control-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #e0e0e0;
+            font-size: 11px;
+        }
+
+        .control-input {
+            width: 100%;
+            padding: 6px 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 12px;
+            transition: border-color 0.3s ease;
+        }
+
+        .control-input:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            background: transparent;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-webkit-slider-track {
+            background: rgba(255, 255, 255, 0.2);
+            height: 4px;
+            border-radius: 2px;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            background: #4CAF50;
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .value-display {
+            font-size: 10px;
+            color: #aaa;
+            text-align: right;
+            margin-top: 2px;
+        }
+
+        .toggle-controls {
+            position: fixed;
+            top: 20px;
+            right: 320px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            z-index: 1002;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-controls:hover {
+            background: rgba(0, 0, 0, 0.9);
+        }
+
+        .controls.hidden {
+            transform: translateX(320px);
+            opacity: 0;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="rainCanvas"></canvas>
+    
+    <button class="toggle-controls" onclick="toggleControls()">⚙️</button>
+    
+    <div class="controls" id="controls">
+        <div class="control-group">
+            <label class="control-label" for="intensity">Densité de la pluie</label>
+            <input type="range" id="intensity" class="control-input" min="10" max="200" value="80" step="10">
+            <div class="value-display" id="intensityValue">80 gouttes</div>
+        </div>
+        
+        <div class="control-group">
+            <label class="control-label" for="speed">Vitesse de chute</label>
+            <input type="range" id="speed" class="control-input" min="0.5" max="5" value="2" step="0.1">
+            <div class="value-display" id="speedValue">2.0x</div>
+        </div>
+        
+        <div class="control-group">
+            <label class="control-label" for="windDirection">Direction du vent</label>
+            <input type="range" id="windDirection" class="control-input" min="-30" max="30" value="0" step="1">
+            <div class="value-display" id="windValue">0°</div>
+        </div>
+        
+        <div class="control-group">
+            <label class="control-label" for="dropColor">Couleur des gouttes</label>
+            <input type="color" id="dropColor" class="control-input" value="#87CEEB">
+        </div>
+        
+        <div class="control-group">
+            <label class="control-label" for="dropSize">Taille des gouttes</label>
+            <input type="range" id="dropSize" class="control-input" min="1" max="8" value="2" step="1">
+            <div class="value-display" id="sizeValue">2px</div>
+        </div>
+        
+        <div class="control-group">
+            <label class="control-label" for="opacity">Opacité</label>
+            <input type="range" id="opacity" class="control-input" min="10" max="100" value="70" step="5">
+            <div class="value-display" id="opacityValue">70%</div>
+        </div>
+        
+        <div class="control-group">
+            <label class="control-label" for="glowIntensity">Intensité du glow</label>
+            <input type="range" id="glowIntensity" class="control-input" min="0" max="10" value="2" step="0.5">
+            <div class="value-display" id="glowValue">2px</div>
+        </div>
+        
+        <div class="control-group">
+            <label class="control-label">
+                <input type="checkbox" id="enableSplash" checked style="margin-right: 5px;">
+                Effets de splash
+            </label>
+        </div>
+    </div>
+
+    <script>
+        class RainEffect {
+            constructor() {
+                this.canvas = document.getElementById('rainCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.raindrops = [];
+                this.splashes = [];
+                
+                this.settings = {
+                    intensity: 80,
+                    speed: 2.0,
+                    windDirection: 0,
+                    dropColor: '#87CEEB',
+                    dropSize: 2,
+                    opacity: 70,
+                    glowIntensity: 2,
+                    enableSplash: true
+                };
+                
+                this.initCanvas();
+                this.initControls();
+                this.createRaindrops();
+                this.animate();
+            }
+            
+            initCanvas() {
+                this.resizeCanvas();
+                window.addEventListener('resize', () => this.resizeCanvas());
+            }
+            
+            resizeCanvas() {
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
+            }
+            
+            initControls() {
+                const controls = {
+                    intensity: (value) => {
+                        this.settings.intensity = parseInt(value);
+                        document.getElementById('intensityValue').textContent = `${value} gouttes`;
+                        this.adjustRaindropCount();
+                    },
+                    speed: (value) => {
+                        this.settings.speed = parseFloat(value);
+                        document.getElementById('speedValue').textContent = `${value}x`;
+                    },
+                    windDirection: (value) => {
+                        this.settings.windDirection = parseInt(value);
+                        document.getElementById('windValue').textContent = `${value}°`;
+                    },
+                    dropColor: (value) => {
+                        this.settings.dropColor = value;
+                    },
+                    dropSize: (value) => {
+                        this.settings.dropSize = parseInt(value);
+                        document.getElementById('sizeValue').textContent = `${value}px`;
+                    },
+                    opacity: (value) => {
+                        this.settings.opacity = parseInt(value);
+                        document.getElementById('opacityValue').textContent = `${value}%`;
+                    },
+                    glowIntensity: (value) => {
+                        this.settings.glowIntensity = parseFloat(value);
+                        document.getElementById('glowValue').textContent = `${value}px`;
+                    },
+                    enableSplash: (checked) => {
+                        this.settings.enableSplash = checked;
+                    }
+                };
+                
+                Object.keys(controls).forEach(key => {
+                    const element = document.getElementById(key);
+                    if (element) {
+                        if (element.type === 'checkbox') {
+                            element.addEventListener('change', (e) => controls[key](e.target.checked));
+                        } else {
+                            element.addEventListener('input', (e) => controls[key](e.target.value));
+                        }
+                    }
+                });
+            }
+            
+            createRaindrops() {
+                this.raindrops = [];
+                for (let i = 0; i < this.settings.intensity; i++) {
+                    this.raindrops.push(this.createRaindrop());
+                }
+            }
+            
+            createRaindrop() {
+                return {
+                    x: Math.random() * (this.canvas.width + 200) - 100,
+                    y: Math.random() * -this.canvas.height,
+                    length: Math.random() * 20 + 10,
+                    opacity: Math.random() * 0.6 + 0.4,
+                    speed: Math.random() * 2 + 1
+                };
+            }
+            
+            adjustRaindropCount() {
+                const currentCount = this.raindrops.length;
+                const targetCount = this.settings.intensity;
+                
+                if (targetCount > currentCount) {
+                    for (let i = currentCount; i < targetCount; i++) {
+                        this.raindrops.push(this.createRaindrop());
+                    }
+                } else if (targetCount < currentCount) {
+                    this.raindrops.splice(targetCount);
+                }
+            }
+            
+            createSplash(x, y) {
+                if (!this.settings.enableSplash) return;
+                
+                for (let i = 0; i < 3; i++) {
+                    this.splashes.push({
+                        x: x + (Math.random() - 0.5) * 10,
+                        y: y,
+                        radius: 0,
+                        maxRadius: Math.random() * 8 + 4,
+                        life: 1,
+                        decay: Math.random() * 0.05 + 0.02
+                    });
+                }
+            }
+            
+            updateRaindrops() {
+                const windOffset = Math.tan(this.settings.windDirection * Math.PI / 180);
+                
+                this.raindrops.forEach((drop, index) => {
+                    drop.y += drop.speed * this.settings.speed * 3;
+                    drop.x += windOffset * drop.speed * this.settings.speed;
+                    
+                    if (drop.y > this.canvas.height) {
+                        this.createSplash(drop.x, this.canvas.height);
+                        
+                        drop.x = Math.random() * (this.canvas.width + 200) - 100;
+                        drop.y = Math.random() * -100 - 100;
+                        drop.length = Math.random() * 20 + 10;
+                        drop.opacity = Math.random() * 0.6 + 0.4;
+                        drop.speed = Math.random() * 2 + 1;
+                    }
+                });
+            }
+            
+            updateSplashes() {
+                this.splashes.forEach((splash, index) => {
+                    splash.radius += 0.5;
+                    splash.life -= splash.decay;
+                    
+                    if (splash.life <= 0 || splash.radius > splash.maxRadius) {
+                        this.splashes.splice(index, 1);
+                    }
+                });
+            }
+            
+            drawRaindrops() {
+                const windOffset = Math.tan(this.settings.windDirection * Math.PI / 180) * 20;
+                
+                this.raindrops.forEach(drop => {
+                    this.ctx.save();
+                    
+                    if (this.settings.glowIntensity > 0) {
+                        this.ctx.shadowColor = this.settings.dropColor;
+                        this.ctx.shadowBlur = this.settings.glowIntensity;
+                    }
+                    
+                    this.ctx.strokeStyle = this.settings.dropColor;
+                    this.ctx.lineWidth = this.settings.dropSize;
+                    this.ctx.lineCap = 'round';
+                    this.ctx.globalAlpha = (drop.opacity * this.settings.opacity) / 100;
+                    
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(drop.x, drop.y);
+                    this.ctx.lineTo(drop.x + windOffset, drop.y + drop.length);
+                    this.ctx.stroke();
+                    
+                    this.ctx.restore();
+                });
+            }
+            
+            drawSplashes() {
+                this.splashes.forEach(splash => {
+                    this.ctx.save();
+                    
+                    this.ctx.strokeStyle = this.settings.dropColor;
+                    this.ctx.lineWidth = 1;
+                    this.ctx.globalAlpha = splash.life * (this.settings.opacity / 100);
+                    
+                    this.ctx.beginPath();
+                    this.ctx.arc(splash.x, splash.y, splash.radius, 0, Math.PI * 2);
+                    this.ctx.stroke();
+                    
+                    this.ctx.restore();
+                });
+            }
+            
+            animate() {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                this.updateRaindrops();
+                this.updateSplashes();
+                
+                this.drawRaindrops();
+                this.drawSplashes();
+                
+                requestAnimationFrame(() => this.animate());
+            }
+        }
+        
+        function toggleControls() {
+            const controls = document.getElementById('controls');
+            controls.classList.toggle('hidden');
+        }
+        
+        // Initialize rain effect when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new RainEffect();
+        });
+        
+        // Hide controls initially after 5 seconds
+        setTimeout(() => {
+            const controls = document.getElementById('controls');
+            controls.classList.add('hidden');
+        }, 5000);
+    </script>
+</body>
+</html>
