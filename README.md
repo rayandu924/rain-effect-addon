@@ -1,106 +1,104 @@
 # 🌧️ Responsive Rain Effect Addon
 
-Un addon d'effet de pluie entièrement responsive qui s'adapte parfaitement à la taille du conteneur, idéal pour les iframes redimensionnables.
+Un addon d'effet de pluie responsive qui adapte les **tailles** des gouttes au conteneur tout en gardant un **nombre constant** de gouttes.
 
-## ✨ **Nouvelles fonctionnalités v2.0.0**
+## ✨ **Fonctionnalités v2.1.0**
 
-### 🎯 **Responsivité parfaite**
-- **Taille des gouttes proportionnelle** : Même apparence visuelle peu importe la taille du conteneur
-- **Densité adaptive** : Le nombre de gouttes s'ajuste selon la surface (8 gouttes par 100x100px par défaut)
-- **Dimensionnement relatif** : Toutes les mesures basées sur la diagonale du conteneur
-- **Support iframe** : Utilise `ResizeObserver` pour les conteneurs redimensionnables
+### 🎯 **Approche corrigée : Tailles adaptatives, Quantité constante**
+- **Nombre de gouttes fixe** : 80 gouttes par défaut, peu importe la taille du conteneur
+- **Tailles proportionnelles** : Épaisseur, longueur et splash s'adaptent automatiquement
+- **Densité visuelle cohérente** : Même feeling visuel dans petit widget ou grand écran
+- **Support iframe parfait** : `ResizeObserver` pour conteneurs redimensionnables
 
 ### 🔧 **Système de scaling intelligent**
 - **Base Unit** : Unité de base = 1/1000ème de la diagonale du conteneur
-- **Scale Factor** : Tous les éléments visuels multipliés par ce facteur
-- **Calcul automatique** : Recalcul instantané lors du redimensionnement
+- **Scale Factor** : Appliqué uniquement aux tailles, pas à la quantité
+- **Recalcul automatique** : Adaptation instantanée au redimensionnement
 
-## ⚙️ **Paramètres optimisés**
+## ⚙️ **Paramètres**
 
-| Paramètre | Type | Description | Amélioration |
-|-----------|------|-------------|---------------|
-| **Rain Density** | 1-20 | Gouttes par zone 100x100px | ✅ Était "intensity" fixe |
-| **Fall Speed** | 0.5-3.0 | Multiplicateur de vitesse | ✅ Responsive |
-| **Rain Color** | Color | Couleur des gouttes | ✅ Défaut blanc |
-| **Drop Thickness** | 0.5-4.0 | Épaisseur relative au conteneur | ✅ Était pixels fixes |
-| **Wind Angle** | -45° à +45° | Angle du vent | ✅ Élargi et responsive |
-| **Rain Opacity** | 10-100% | Transparence globale | ✅ Inchangé |
-| **Ground Splashes** | Boolean | Effets d'éclaboussure | ✅ Splash responsive |
+| Paramètre | Type | Description | Range | Défaut |
+|-----------|------|-------------|-------|--------|
+| **Rain Count** | Range | Nombre total de gouttes | 20-200 | 80 |
+| **Fall Speed** | Range | Multiplicateur de vitesse | 0.5-3.0 | 1.5 |
+| **Rain Color** | Color | Couleur des gouttes | Couleur | Blanc |
+| **Drop Thickness** | Range | Épaisseur relative au conteneur | 0.5-4.0 | 2.0 |
+| **Wind Angle** | Range | Angle du vent | -45° à +45° | 0° |
+| **Rain Opacity** | Range | Transparence globale | 10-100% | 60% |
+| **Ground Splashes** | Boolean | Effets d'éclaboussure | On/Off | On |
 
-## 📊 **Comparaison vs Version Originale**
+## 📊 **Comparaison des approches**
 
-### ❌ **Version 1.0.0 (Problématique)**
-```javascript
-// Tailles fixes - problématique
-dropSize: 1-8px (toujours pareil)
-length: 10-30px (fixe)
-canvas.width = window.innerWidth (mauvais pour iframe)
-intensity: 10-200 (même nombre partout)
+### ❌ **Version 2.0.0 (Problématique)**
+```
+Petit conteneur (200x150px) : 24 gouttes épaisses
+Grand conteneur (1920x1080px) : 1660 gouttes fines
+→ Densité variable, expérience différente
 ```
 
-### ✅ **Version 2.0.0 (Responsive)**
-```javascript
-// Tailles relatives - parfait
-dropSize: 0.5-4.0 * scaleFactor (proportionnel)
-length: (8-20) * scaleFactor (adaptatif)  
-canvas.width = container.width (correct iframe)
-intensity: density * (area/baseArea) (densité adaptée)
+### ✅ **Version 2.1.0 (Correcte)**
+```
+Petit conteneur (200x150px) : 80 gouttes fines
+Grand conteneur (1920x1080px) : 80 gouttes épaisses  
+→ Même densité visuelle, expérience cohérente
 ```
 
-## 🎮 **Exemples d'usage**
+## 🎮 **Exemples concrets**
 
-### **Petit conteneur (200x150px)**
-- Density: 8 → ~24 gouttes total
-- Drop thickness: 2.0 → ~0.4px (fin)
-- Splash size: ~0.3px (minuscule)
-- Base unit: ~0.25
+### **Widget sidebar 300x400px**
+- **Gouttes** : 80 (quantité fixe)
+- **Épaisseur** : ~0.7px (fine, baseUnit = 0.5)
+- **Longueur** : ~10px (courte)
+- **Feeling** : Pluie dense et fine
 
-### **Grand conteneur (1920x1080px)**  
-- Density: 8 → ~1660 gouttes total
-- Drop thickness: 2.0 → ~4.3px (épais)
-- Splash size: ~2.2px (visible)
-- Base unit: ~2.2
+### **Fullscreen 1920x1080px**  
+- **Gouttes** : 80 (même quantité)
+- **Épaisseur** : ~4.3px (épaisse, baseUnit = 2.4)
+- **Longueur** : ~48px (longue)  
+- **Feeling** : Pluie dense et épaisse
 
-## 🔧 **Fonctionnalités techniques**
+**→ Résultat** : Même impression visuelle de densité !
 
-### **Container Detection**
+## 🔧 **Implémentation technique**
+
+### **Quantité constante**
 ```javascript
-// Détection automatique du conteneur parent
-this.container = this.canvas.parentElement || document.body
-const rect = this.container.getBoundingClientRect()
+// FIXE: Utilise intensity directement comme nombre de gouttes
+const dropCount = this.settings.intensity // Toujours 80
 ```
 
-### **ResizeObserver Support**
+### **Tailles adaptatives**  
 ```javascript
-// Meilleur support iframe qu'addEventListener('resize')
-if (window.ResizeObserver) {
-    const resizeObserver = new ResizeObserver(resizeCanvas)
-    resizeObserver.observe(this.container)
-}
+// Épaisseur responsive
+const lineWidth = this.scaleFactor * this.settings.dropSize * 0.8
+
+// Longueur responsive  
+length: this.scaleFactor * (8 + Math.random() * 12)
+
+// Splash responsive
+size: this.scaleFactor * (0.5 + Math.random())
 ```
 
-### **Scaling System**
+### **Scaling basé sur diagonale**
 ```javascript
-// Système de mise à l'échelle basé sur la diagonale
 const diagonal = Math.sqrt(width² + height²)
 this.baseUnit = Math.max(1, diagonal / 1000)
-// Tous les éléments × baseUnit
 ```
 
 ## 🚀 **Avantages**
 
-1. **🎯 Cohérence visuelle** : Même rendu peu importe la taille
-2. **⚡ Performance** : Densité adaptée (moins de gouttes dans petits conteneurs)
-3. **🔧 Iframe-ready** : Parfait pour les systèmes d'addons
-4. **📱 Mobile-friendly** : S'adapte aux petits écrans
-5. **🎮 UX améliorée** : Paramètres plus intuitifs (densité vs nombre absolu)
+1. **🎯 Cohérence visuelle** : Même densité perçue partout
+2. **⚡ Performance stable** : Toujours le même nombre de gouttes  
+3. **🔧 Iframe-ready** : Detection automatique du conteneur
+4. **📱 Responsive parfait** : Adaptation fluide mobile/desktop
+5. **🎮 UX intuitive** : Paramètre "Rain Count" compréhensible
 
 ## 💡 **Cas d'usage parfaits**
 
-- ✅ **Widgets redimensionnables** : Taille cohérente dans tous les formats
-- ✅ **Applications iframe** : Detection automatique du conteneur
-- ✅ **Responsive design** : Adaptation mobile/desktop transparente  
-- ✅ **Fond d'écran adaptatif** : Density parfaite pour toutes résolutions
+- ✅ **Widgets redimensionnables** : Densité cohérente, tailles adaptées
+- ✅ **Applications iframe** : Performance stable peu importe la taille
+- ✅ **Wallpaper responsive** : Même effect sur mobile et desktop
+- ✅ **Interface adaptative** : Transitions fluides sans changement de densité
 
 ---
-**Résultat** : Un effet de pluie qui a *exactement* la même apparence visuelle qu'il soit dans un conteneur 100×100px ou 1920×1080px !
+**Résultat** : Un effet de pluie avec la **même densité visuelle** et des **tailles parfaitement adaptées** au conteneur !

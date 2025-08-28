@@ -1,7 +1,7 @@
 {
   "metadata": {
     "name": "Rain Effect Responsive",
-    "version": "2.0.0",
+    "version": "2.1.0",
     "description": "Realistic responsive rain animation that scales with container size",
     "author": "MyWallpaper",
     "icon": "🌧️"
@@ -9,12 +9,12 @@
   "settings": {
     "intensity": {
       "type": "range",
-      "label": "Rain Density",
-      "description": "Rain density per 100x100px area",
-      "min": 1,
-      "max": 20,
-      "step": 1,
-      "default": 8
+      "label": "Rain Count",
+      "description": "Total number of raindrops (sizes adapt to container)",
+      "min": 20,
+      "max": 200,
+      "step": 10,
+      "default": 80
     },
     "speed": {
       "type": "range", 

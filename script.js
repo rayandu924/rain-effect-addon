@@ -17,7 +17,7 @@ class ResponsiveRainEffect {
         
         // Default settings (responsive values)
         this.settings = {
-            intensity: 8,        // drops per 100x100px
+            intensity: 80,       // fixed number of drops
             speed: 1.5,         // speed multiplier
             dropColor: '#ffffff',
             dropSize: 2.0,      // relative thickness
@@ -103,12 +103,11 @@ class ResponsiveRainEffect {
     createRaindrops() {
         this.raindrops = []
         
-        // Calculate actual number of drops based on container area and density setting
-        const area = this.containerWidth * this.containerHeight
-        const baseArea = 100 * 100 // 100x100px reference area
-        const dropCount = Math.round((area / baseArea) * this.settings.intensity)
+        // FIXED: Use intensity directly as number of drops, regardless of container size
+        // Only the SIZE of drops will scale, not the quantity
+        const dropCount = this.settings.intensity
         
-        console.log('💧 Creating', dropCount, 'raindrops for area', Math.round(area) + 'px²')
+        console.log('💧 Creating', dropCount, 'raindrops (fixed count, responsive size)')
         
         for (let i = 0; i < dropCount; i++) {
             this.raindrops.push(this.createRandomRaindrop())
