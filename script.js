@@ -1,40 +1,77 @@
-// 🌧️ RAIN EFFECT ADDON - Realistic rain animation
-class RainEffect {
+// 🌧️ RESPONSIVE RAIN EFFECT ADDON - Scales with container size
+class ResponsiveRainEffect {
     constructor() {
         this.canvas = document.getElementById('rainCanvas')
         this.ctx = this.canvas.getContext('2d')
+        this.container = this.canvas.parentElement || document.body
+        
         this.raindrops = []
         this.splashes = []
         this.animationId = null
         
-        // Default settings
+        // Responsive scaling factors
+        this.scaleFactor = 1
+        this.containerWidth = 0
+        this.containerHeight = 0
+        this.baseUnit = 1 // Base unit for scaling (will be calculated)
+        
+        // Default settings (responsive values)
         this.settings = {
-            intensity: 80,
-            speed: 2.0,
-            dropColor: '#87CEEB',
-            dropSize: 2,
-            windDirection: 0,
-            opacity: 70,
+            intensity: 8,        // drops per 100x100px
+            speed: 1.5,         // speed multiplier
+            dropColor: '#ffffff',
+            dropSize: 2.0,      // relative thickness
+            windDirection: 0,   // angle in degrees
+            opacity: 60,        // percentage
             enableSplash: true
         }
         
         this.setupCanvas()
         this.setupEventListeners()
+        this.calculateScaling()
         this.initRain()
         this.animate()
         
-        console.log('🌧️ Rain Effect initialized')
+        console.log('🌧️ Responsive Rain Effect initialized')
     }
     
     setupCanvas() {
         const resizeCanvas = () => {
-            this.canvas.width = window.innerWidth
-            this.canvas.height = window.innerHeight
-            this.createRaindrops() // Recreate drops on resize
+            // Use container size instead of window size
+            const rect = this.container.getBoundingClientRect()
+            this.containerWidth = rect.width
+            this.containerHeight = rect.height
+            
+            // Set canvas size to match container
+            this.canvas.width = this.containerWidth
+            this.canvas.height = this.containerHeight
+            
+            // Update scaling and recreate drops
+            this.calculateScaling()
+            this.createRaindrops()
+            
+            console.log('🔄 Canvas resized:', this.containerWidth + 'x' + this.containerHeight, 'scale:', this.scaleFactor.toFixed(2))
         }
         
         resizeCanvas()
-        window.addEventListener('resize', resizeCanvas)
+        
+        // Use ResizeObserver for better iframe support
+        if (window.ResizeObserver) {
+            const resizeObserver = new ResizeObserver(resizeCanvas)
+            resizeObserver.observe(this.container)
+        } else {
+            // Fallback to window resize
+            window.addEventListener('resize', resizeCanvas)
+        }
+    }
+    
+    calculateScaling() {
+        // Calculate base unit as percentage of container diagonal
+        const diagonal = Math.sqrt(this.containerWidth * this.containerWidth + this.containerHeight * this.containerHeight)
+        this.baseUnit = Math.max(1, diagonal / 1000) // 1 unit = 1/1000 of diagonal
+        this.scaleFactor = this.baseUnit
+        
+        console.log('📏 Scaling calculated - baseUnit:', this.baseUnit.toFixed(2), 'diagonal:', diagonal.toFixed(0) + 'px')
     }
     
     setupEventListeners() {
@@ -49,11 +86,11 @@ class RainEffect {
     updateSettings(newSettings) {
         console.log('🔧 Updating rain settings:', newSettings)
         
-        // Update settings
+        const oldIntensity = this.settings.intensity
         Object.assign(this.settings, newSettings)
         
         // Recreate raindrops if intensity changed
-        if (this.raindrops.length !== this.settings.intensity) {
+        if (oldIntensity !== this.settings.intensity) {
             this.createRaindrops()
         }
         
@@ -66,33 +103,47 @@ class RainEffect {
     createRaindrops() {
         this.raindrops = []
         
-        for (let i = 0; i < this.settings.intensity; i++) {
+        // Calculate actual number of drops based on container area and density setting
+        const area = this.containerWidth * this.containerHeight
+        const baseArea = 100 * 100 // 100x100px reference area
+        const dropCount = Math.round((area / baseArea) * this.settings.intensity)
+        
+        console.log('💧 Creating', dropCount, 'raindrops for area', Math.round(area) + 'px²')
+        
+        for (let i = 0; i < dropCount; i++) {
             this.raindrops.push(this.createRandomRaindrop())
         }
     }
     
     createRandomRaindrop() {
+        const windRadians = (this.settings.windDirection * Math.PI) / 180
+        const startOffset = Math.abs(this.containerHeight * Math.tan(windRadians))
+        
         return {
-            x: Math.random() * (this.canvas.width + 100) - 50,
-            y: Math.random() * -500,
-            speed: this.settings.speed * (0.8 + Math.random() * 0.4),
-            length: 10 + Math.random() * 20,
-            opacity: 0.3 + Math.random() * 0.7
+            x: Math.random() * (this.containerWidth + startOffset * 2) - startOffset,
+            y: Math.random() * -this.containerHeight * 0.5,
+            speed: this.scaleFactor * (2 + Math.random() * 3), // Responsive speed
+            length: this.scaleFactor * (8 + Math.random() * 12), // Responsive length
+            opacity: 0.4 + Math.random() * 0.6,
+            angle: windRadians
         }
     }
     
     createSplash(x, y) {
         if (!this.settings.enableSplash) return
         
-        for (let i = 0; i < 3; i++) {
+        const splashCount = 2 + Math.round(Math.random() * 2)
+        const splashSize = this.scaleFactor * (0.5 + Math.random())
+        
+        for (let i = 0; i < splashCount; i++) {
             this.splashes.push({
-                x: x + (Math.random() - 0.5) * 10,
+                x: x + (Math.random() - 0.5) * this.scaleFactor * 8,
                 y: y,
-                vx: (Math.random() - 0.5) * 4,
-                vy: -Math.random() * 3 - 1,
-                life: 30,
+                vx: (Math.random() - 0.5) * this.scaleFactor * 3,
+                vy: -Math.random() * this.scaleFactor * 2 - this.scaleFactor,
+                life: 15 + Math.random() * 15,
                 maxLife: 30,
-                size: 1 + Math.random() * 2
+                size: splashSize
             })
         }
     }
@@ -102,6 +153,7 @@ class RainEffect {
     }
     
     animate() {
+        // Clear with transparent background
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
         
         this.updateRaindrops()
@@ -116,29 +168,38 @@ class RainEffect {
     }
     
     updateRaindrops() {
-        const windOffset = this.settings.windDirection * 0.1
-        
         this.raindrops.forEach(drop => {
+            // Update position based on speed and wind
             drop.y += drop.speed * this.settings.speed
-            drop.x += windOffset
+            drop.x += Math.sin(drop.angle) * drop.speed * this.settings.speed * 0.5
             
-            // Reset raindrop when it goes off screen
-            if (drop.y > this.canvas.height + 50) {
+            // Check if drop hit the ground
+            if (drop.y > this.containerHeight + this.scaleFactor * 10) {
                 // Create splash effect
-                this.createSplash(drop.x, this.canvas.height - 5)
+                if (drop.x >= -this.scaleFactor * 20 && drop.x <= this.containerWidth + this.scaleFactor * 20) {
+                    this.createSplash(drop.x, this.containerHeight - this.scaleFactor * 2)
+                }
                 
                 // Reset drop position
-                drop.x = Math.random() * (this.canvas.width + 100) - 50
-                drop.y = Math.random() * -200
-                drop.speed = this.settings.speed * (0.8 + Math.random() * 0.4)
+                this.resetRaindrop(drop)
             }
             
             // Reset if goes too far horizontally
-            if (drop.x < -100 || drop.x > this.canvas.width + 100) {
-                drop.x = Math.random() * (this.canvas.width + 100) - 50
-                drop.y = Math.random() * -200
+            const margin = this.scaleFactor * 50
+            if (drop.x < -margin || drop.x > this.containerWidth + margin) {
+                this.resetRaindrop(drop)
             }
         })
+    }
+    
+    resetRaindrop(drop) {
+        const windRadians = (this.settings.windDirection * Math.PI) / 180
+        const startOffset = Math.abs(this.containerHeight * Math.tan(windRadians))
+        
+        drop.x = Math.random() * (this.containerWidth + startOffset * 2) - startOffset
+        drop.y = Math.random() * -this.containerHeight * 0.3 - this.scaleFactor * 20
+        drop.speed = this.scaleFactor * (2 + Math.random() * 3)
+        drop.angle = windRadians
     }
     
     updateSplashes() {
@@ -147,7 +208,7 @@ class RainEffect {
             
             splash.x += splash.vx
             splash.y += splash.vy
-            splash.vy += 0.2 // gravity
+            splash.vy += this.scaleFactor * 0.15 // responsive gravity
             splash.life--
             
             if (splash.life <= 0) {
@@ -157,8 +218,9 @@ class RainEffect {
     }
     
     drawRaindrops() {
-        this.ctx.strokeStyle = this.hexToRgba(this.settings.dropColor, this.settings.opacity / 100)
-        this.ctx.lineWidth = this.settings.dropSize
+        // Responsive line width
+        const lineWidth = Math.max(0.5, this.scaleFactor * this.settings.dropSize * 0.8)
+        this.ctx.lineWidth = lineWidth
         this.ctx.lineCap = 'round'
         
         this.raindrops.forEach(drop => {
@@ -167,7 +229,12 @@ class RainEffect {
             
             this.ctx.beginPath()
             this.ctx.moveTo(drop.x, drop.y)
-            this.ctx.lineTo(drop.x - this.settings.windDirection * 0.3, drop.y - drop.length)
+            
+            // Calculate end point based on length and angle
+            const endX = drop.x - Math.sin(drop.angle) * drop.length
+            const endY = drop.y - Math.cos(drop.angle) * drop.length
+            
+            this.ctx.lineTo(endX, endY)
             this.ctx.stroke()
         })
     }
@@ -184,9 +251,21 @@ class RainEffect {
     }
     
     hexToRgba(hex, alpha) {
-        const r = parseInt(hex.slice(1, 3), 16)
-        const g = parseInt(hex.slice(3, 5), 16)
-        const b = parseInt(hex.slice(5, 7), 16)
+        // Handle both #RGB and #RRGGBB formats
+        hex = hex.replace('#', '')
+        
+        let r, g, b
+        
+        if (hex.length === 3) {
+            r = parseInt(hex[0] + hex[0], 16)
+            g = parseInt(hex[1] + hex[1], 16)
+            b = parseInt(hex[2] + hex[2], 16)
+        } else {
+            r = parseInt(hex.slice(0, 2), 16)
+            g = parseInt(hex.slice(2, 4), 16)
+            b = parseInt(hex.slice(4, 6), 16)
+        }
+        
         return `rgba(${r}, ${g}, ${b}, ${alpha})`
     }
     
@@ -194,11 +273,10 @@ class RainEffect {
         if (this.animationId) {
             cancelAnimationFrame(this.animationId)
         }
-        window.removeEventListener('resize', this.resizeCanvas)
     }
 }
 
-// Initialize rain effect when DOM is loaded
+// Initialize responsive rain effect when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    window.rainEffect = new RainEffect()
+    window.rainEffect = new ResponsiveRainEffect()
 })

@@ -1,67 +1,67 @@
 {
   "metadata": {
-    "name": "Rain Effect",
-    "version": "1.0.0",
-    "description": "Realistic rain animation with configurable intensity and physics",
+    "name": "Rain Effect Responsive",
+    "version": "2.0.0",
+    "description": "Realistic responsive rain animation that scales with container size",
     "author": "MyWallpaper",
     "icon": "🌧️"
   },
   "settings": {
     "intensity": {
       "type": "range",
-      "label": "Rain Intensity",
-      "description": "Number of raindrops falling",
-      "min": 10,
-      "max": 200,
-      "step": 10,
-      "default": 80
+      "label": "Rain Density",
+      "description": "Rain density per 100x100px area",
+      "min": 1,
+      "max": 20,
+      "step": 1,
+      "default": 8
     },
     "speed": {
-      "type": "range",
+      "type": "range", 
       "label": "Fall Speed",
-      "description": "How fast raindrops fall",
+      "description": "Rain fall speed multiplier",
       "min": 0.5,
-      "max": 5.0,
+      "max": 3.0,
       "step": 0.1,
-      "default": 2.0
+      "default": 1.5
     },
     "dropColor": {
       "type": "color",
-      "label": "Rain Color",
+      "label": "Rain Color", 
       "description": "Color of the raindrops",
-      "default": "#87CEEB"
+      "default": "#ffffff"
     },
     "dropSize": {
       "type": "range",
-      "label": "Drop Size",
-      "description": "Size of individual raindrops",
-      "min": 1,
-      "max": 8,
-      "step": 1,
-      "default": 2
+      "label": "Drop Thickness",
+      "description": "Thickness of raindrops (relative to container)",
+      "min": 0.5,
+      "max": 4.0,
+      "step": 0.1,
+      "default": 2.0
     },
     "windDirection": {
       "type": "range",
-      "label": "Wind Direction",
+      "label": "Wind Angle",
       "description": "Wind angle affecting rain direction",
-      "min": -30,
-      "max": 30,
+      "min": -45,
+      "max": 45,
       "step": 1,
       "default": 0
     },
     "opacity": {
       "type": "range",
       "label": "Rain Opacity",
-      "description": "Transparency of the rain effect",
+      "description": "Overall rain transparency",
       "min": 10,
       "max": 100,
       "step": 5,
-      "default": 70
+      "default": 60
     },
     "enableSplash": {
       "type": "boolean",
-      "label": "Enable Splash Effects",
-      "description": "Show splash effects when raindrops hit the ground",
+      "label": "Ground Splashes",
+      "description": "Show splash effects when raindrops hit ground",
       "default": true
     }
   }
