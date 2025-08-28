@@ -1,8 +1,8 @@
 {
   "metadata": {
     "name": "Rain Effect Responsive",
-    "version": "2.1.0",
-    "description": "Realistic responsive rain animation that scales with container size",
+    "version": "2.1.1",
+    "description": "Fully responsive rain animation with unlimited scaling range",
     "author": "MyWallpaper",
     "icon": "🌧️"
   },

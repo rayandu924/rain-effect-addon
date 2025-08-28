@@ -66,9 +66,9 @@ class ResponsiveRainEffect {
     }
     
     calculateScaling() {
-        // Calculate base unit as percentage of container diagonal
+        // Calculate base unit as percentage of container diagonal - NO MINIMUM!
         const diagonal = Math.sqrt(this.containerWidth * this.containerWidth + this.containerHeight * this.containerHeight)
-        this.baseUnit = Math.max(1, diagonal / 1000) // 1 unit = 1/1000 of diagonal
+        this.baseUnit = diagonal / 1000 // Pure 1/1000 of diagonal, no limits
         this.scaleFactor = this.baseUnit
         
         console.log('📏 Scaling calculated - baseUnit:', this.baseUnit.toFixed(2), 'diagonal:', diagonal.toFixed(0) + 'px')
@@ -217,8 +217,8 @@ class ResponsiveRainEffect {
     }
     
     drawRaindrops() {
-        // Responsive line width
-        const lineWidth = Math.max(0.5, this.scaleFactor * this.settings.dropSize * 0.8)
+        // Fully responsive line width - NO MINIMUM!
+        const lineWidth = this.scaleFactor * this.settings.dropSize * 0.8
         this.ctx.lineWidth = lineWidth
         this.ctx.lineCap = 'round'
         
