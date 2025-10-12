@@ -1,11 +1,10 @@
 {
-  "metadata": {
-    "name": "Rain Effect Responsive",
-    "version": "2.1.1",
-    "description": "Fully responsive rain animation with unlimited scaling range",
-    "author": "MyWallpaper",
-    "icon": "🌧️"
-  },
+  "name": "Rain Effect Responsive",
+  "version": "2.1.1",
+  "description": "Fully responsive rain animation with unlimited scaling range",
+  "author": "MyWallpaper",
+  "type": "visual-effect",
+  "categories": ["weather", "animation"],
   "settings": {
     "intensity": {
       "type": "range",
@@ -17,7 +16,7 @@
       "default": 80
     },
     "speed": {
-      "type": "range", 
+      "type": "range",
       "label": "Fall Speed",
       "description": "Rain fall speed multiplier",
       "min": 0.5,
@@ -27,7 +26,7 @@
     },
     "dropColor": {
       "type": "color",
-      "label": "Rain Color", 
+      "label": "Rain Color",
       "description": "Color of the raindrops",
       "default": "#ffffff"
     },
