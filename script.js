@@ -4,35 +4,40 @@ class ResponsiveRainEffect {
         this.canvas = document.getElementById('rainCanvas')
         this.ctx = this.canvas.getContext('2d')
         this.container = this.canvas.parentElement || document.body
-        
+
         this.raindrops = []
         this.splashes = []
         this.animationId = null
-        
+        this.isFirstFrame = true
+        this.layerId = window.MYWALLPAPER_LAYER_ID
+
         // Responsive scaling factors
         this.scaleFactor = 1
         this.containerWidth = 0
         this.containerHeight = 0
         this.baseUnit = 1 // Base unit for scaling (will be calculated)
-        
-        // Default settings (responsive values)
+
+        // ✅ Read pre-injected config from MyWallpaper (avoids race condition)
+        const config = window.MYWALLPAPER_CONFIG || {}
+
+        // Default settings merged with pre-injected config
         this.settings = {
-            intensity: 80,       // fixed number of drops
-            speed: 1.5,         // speed multiplier
-            dropColor: '#ffffff',
-            dropSize: 2.0,      // relative thickness
-            windDirection: 0,   // angle in degrees
-            opacity: 60,        // percentage
-            enableSplash: true
+            intensity: config.intensity ?? 80,
+            speed: config.speed ?? 1.5,
+            dropColor: config.dropColor ?? '#ffffff',
+            dropSize: config.dropSize ?? 2.0,
+            windDirection: config.windDirection ?? 0,
+            opacity: config.opacity ?? 60,
+            enableSplash: config.enableSplash ?? true
         }
-        
+
         this.setupCanvas()
         this.setupEventListeners()
         this.calculateScaling()
         this.initRain()
         this.animate()
-        
-        console.log('🌧️ Responsive Rain Effect initialized')
+
+        console.log('🌧️ Responsive Rain Effect initialized with config:', this.settings)
     }
     
     setupCanvas() {
@@ -154,15 +159,25 @@ class ResponsiveRainEffect {
     animate() {
         // Clear with transparent background
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
-        
+
         this.updateRaindrops()
         this.drawRaindrops()
-        
+
         if (this.settings.enableSplash) {
             this.updateSplashes()
             this.drawSplashes()
         }
-        
+
+        // ✅ Signal ADDON_READY after first frame rendered (for thumbnail generation)
+        if (this.isFirstFrame && this.layerId) {
+            this.isFirstFrame = false
+            window.parent.postMessage({
+                type: 'ADDON_READY',
+                layerId: this.layerId
+            }, '*')
+            console.log('✅ Rain effect ready signal sent')
+        }
+
         this.animationId = requestAnimationFrame(() => this.animate())
     }
     
