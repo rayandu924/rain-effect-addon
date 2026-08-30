@@ -3,17 +3,24 @@
   "version": "3.2.3",
   "private": true,
   "type": "module",
+  "packageManager": "pnpm@10.33.0",
   "scripts": {
-    "build": "vite build",
-    "dev": "vite build --watch",
-    "serve": "npx serve dist --cors -l 5173"
+    "dev": "vite --host 0.0.0.0 --port 5173",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --host 0.0.0.0 --port 5173",
+    "typecheck": "tsc --noEmit",
+    "test": "node scripts/verify-dist-entry.mjs"
+  },
+  "dependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
-    "@mywallpaper/sdk-react": "file:../MyWallpaper/packages/sdk-react",
+    "@webgpu/types": "^0.1.64",
     "@types/react": "^19.0.0",
-    "react": "^19.0.0",
-    "typescript": "^5.7.0",
-    "vite": "^7.3.2",
-    "@mywallpaper/vite-plugin": "file:../MyWallpaper/packages/vite-plugin"
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^5.2.0",
+    "typescript": "~5.8.3",
+    "vite": "^7.3.6"
   }
 }

@@ -1,147 +1,27 @@
 {
+  "runtime": "canvas-v1",
   "name": "Rain Effect",
+  "description": "Beautiful rain effect with realistic droplets and customizable settings.",
   "version": "3.2.3",
-  "entry": "index.js",
-  "description": "Beautiful rain effect with realistic droplets and customizable settings",
-  "author": "MyWallpaper Team",
-  "license": "MIT",
-  "repository": "https://github.com/MyWallpapers/mywallpaper-addon-rain-effect",
-  "categories": [
-    "effects",
-    "weather",
-    "ambient"
-  ],
-  "settings": {
-    "rainSection": {
-      "type": "section",
-      "content": {
-        "label": "Rain Settings"
-      }
-    },
-    "rainColor": {
-      "type": "color",
-      "content": {
-        "label": "Rain Color",
-        "description": "Color of the raindrops",
-        "default": "#a8c8e8"
-      }
-    },
-    "rainIntensity": {
-      "type": "range",
-      "content": {
-        "label": "Rain Intensity",
-        "description": "Number of raindrops (WebGPU accelerated)",
-        "min": 100,
-        "max": 50000,
-        "step": 100,
-        "default": 200
-      }
-    },
-    "rainSpeed": {
-      "type": "range",
-      "content": {
-        "label": "Fall Speed",
-        "description": "How fast the rain falls",
-        "min": 0.5,
-        "max": 3,
-        "step": 0.1,
-        "default": 1.7
-      }
-    },
-    "dropLength": {
-      "type": "range",
-      "content": {
-        "label": "Drop Length",
-        "description": "Length of rain streaks",
-        "min": 5,
-        "max": 50,
-        "step": 1,
-        "default": 42
-      }
-    },
-    "dropWidth": {
-      "type": "range",
-      "content": {
-        "label": "Drop Width",
-        "description": "Thickness of raindrops",
-        "min": 0.5,
-        "max": 4,
-        "step": 0.1,
-        "default": 0.8
-      }
-    },
-    "windSection": {
-      "type": "section",
-      "content": {
-        "label": "Wind & Direction"
-      }
-    },
-    "windAngle": {
-      "type": "range",
-      "content": {
-        "label": "Wind Angle",
-        "description": "Angle of rain (-45 to 45 degrees)",
-        "min": -45,
-        "max": 45,
-        "step": 1,
-        "default": -5
-      }
-    },
-    "windVariation": {
-      "type": "range",
-      "content": {
-        "label": "Wind Variation",
-        "description": "Random variation in wind",
-        "min": 0,
-        "max": 20,
-        "step": 1,
-        "default": 0
-      }
-    },
-    "effectsSection": {
-      "type": "section",
-      "content": {
-        "label": "Visual Effects"
-      }
-    },
-    "opacity": {
-      "type": "range",
-      "content": {
-        "label": "Opacity",
-        "description": "Transparency of raindrops",
-        "min": 0.1,
-        "max": 1,
-        "step": 0.05,
-        "default": 0.6
-      }
-    },
-    "enableGlow": {
-      "type": "boolean",
-      "content": {
-        "label": "Enable Glow",
-        "description": "Add a soft glow effect to raindrops",
-        "default": true
-      }
-    },
-    "glowIntensity": {
-      "type": "range",
-      "content": {
-        "label": "Glow Intensity",
-        "description": "Brightness of the glow effect",
-        "min": 0.1,
-        "max": 1,
-        "step": 0.05,
-        "default": 0.3
-      }
-    }
-  },
-  "defaultLayout": {
-    "xPercent": 0,
-    "yPercent": 0,
-    "widthPercent": 100,
-    "heightPercent": 100
-  },
+  "entry": "dist/index.html",
+  "thumbnail": "assets/thumbnail.png",
+  "deviceSettingsVersion": "1",
   "ui": {
     "pointerEvents": "none"
-  }
+  },
+  "settings": [
+    { "id": "rain", "type": "section", "label": "Rain" },
+    { "id": "rainColor", "type": "color", "label": "Rain color", "description": "Color of the raindrops", "parent": "rain", "scope": "layer", "default": "#a8c8e8" },
+    { "id": "rainIntensity", "type": "range", "label": "Rain intensity", "description": "Number of raindrops", "parent": "rain", "scope": "layer", "min": 100, "max": 50000, "step": 100, "default": 200 },
+    { "id": "rainSpeed", "type": "range", "label": "Fall speed", "description": "How fast the rain falls", "parent": "rain", "scope": "layer", "min": 0.5, "max": 3, "step": 0.1, "default": 1.7 },
+    { "id": "dropLength", "type": "range", "label": "Drop length", "description": "Length of rain streaks", "parent": "rain", "scope": "layer", "min": 5, "max": 50, "step": 1, "default": 42 },
+    { "id": "dropWidth", "type": "range", "label": "Drop width", "description": "Thickness of raindrops", "parent": "rain", "scope": "layer", "min": 0.5, "max": 4, "step": 0.1, "default": 0.8 },
+    { "id": "wind", "type": "section", "label": "Wind" },
+    { "id": "windAngle", "type": "range", "label": "Wind angle", "description": "Angle of rain", "parent": "wind", "scope": "layer", "min": -45, "max": 45, "step": 1, "default": -5 },
+    { "id": "windVariation", "type": "range", "label": "Wind variation", "description": "Random variation in wind", "parent": "wind", "scope": "layer", "min": 0, "max": 20, "step": 1, "default": 0 },
+    { "id": "effects", "type": "section", "label": "Effects" },
+    { "id": "opacity", "type": "range", "label": "Opacity", "description": "Transparency of raindrops", "parent": "effects", "scope": "layer", "min": 0.1, "max": 1, "step": 0.05, "default": 0.6 },
+    { "id": "enableGlow", "type": "boolean", "label": "Enable glow", "description": "Add a soft glow effect", "parent": "effects", "scope": "layer", "default": true },
+    { "id": "glowIntensity", "type": "range", "label": "Glow intensity", "description": "Brightness of the glow effect", "parent": "effects", "scope": "layer", "min": 0.1, "max": 1, "step": 0.05, "default": 0.3 }
+  ]
 }

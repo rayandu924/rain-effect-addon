@@ -1,5 +1,37 @@
 import { useRef, useEffect, useState } from 'react'
-import { useSettings, useViewport } from '@mywallpaper/sdk-react'
+import { createRoot } from 'react-dom/client'
+import type { CanvasAddonMountContext } from '../generated/mywallpaper-runtime'
+
+type LayerApi = CanvasAddonMountContext['layer']
+
+function useSettings<T>(layer: LayerApi): T {
+  const [settings, setSettings] = useState<T>(() => layer.settings.get() as T)
+
+  useEffect(() => layer.settings.subscribe((next) => setSettings(next as T)), [layer])
+  return settings
+}
+
+function useViewport(layer: LayerApi): { width: number; height: number } {
+  const read = () => ({
+    width: layer.root.clientWidth || window.innerWidth,
+    height: layer.root.clientHeight || window.innerHeight,
+  })
+  const [viewport, setViewport] = useState(read)
+
+  useEffect(() => {
+    const update = () => setViewport(read())
+    update()
+    window.addEventListener('resize', update)
+    const observer = new ResizeObserver(update)
+    observer.observe(layer.root)
+    return () => {
+      window.removeEventListener('resize', update)
+      observer.disconnect()
+    }
+  }, [layer])
+
+  return viewport
+}
 
 interface RainSettings {
   rainColor: string
@@ -137,9 +169,9 @@ struct U { w: f32, h: f32, hw: f32, opacity: f32, r: f32, g: f32, b: f32, _p: f3
 const PARTICLE_BYTES = 32
 const BUF_USAGE = GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST | GPUBufferUsage.COPY_SRC
 
-export default function RainEffect() {
-  const raw = useSettings<Partial<RainSettings>>()
-  const { width, height } = useViewport()
+export default function RainEffect({ layer }: { layer: LayerApi }) {
+  const raw = useSettings<Partial<RainSettings>>(layer)
+  const { width, height } = useViewport(layer)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [gpuError, setGpuError] = useState('')
 
@@ -420,4 +452,22 @@ export default function RainEffect() {
       style={{ width: '100%', height: '100%', display: 'block' }}
     />
   )
+}
+
+export function mount(context: CanvasAddonMountContext): () => void {
+  const root = context.layer.root
+  root.classList.add('mwa-rain-root')
+  root.style.width = '100%'
+  root.style.height = '100%'
+  root.style.margin = '0'
+  root.style.overflow = 'hidden'
+  root.style.background = 'transparent'
+
+  const reactRoot = createRoot(root)
+  reactRoot.render(<RainEffect layer={context.layer} />)
+  return () => {
+    reactRoot.unmount()
+    root.classList.remove('mwa-rain-root')
+    root.replaceChildren()
+  }
 }
