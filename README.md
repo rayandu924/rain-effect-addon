@@ -1,68 +1,55 @@
-# Rain Effect Addon
+# Rain Effect Add-on
 
-A beautiful, customizable rain effect addon for [MyWallpaper](https://github.com/MyWallpapers/MyWallpaper). Features realistic raindrops with parallax depth, splash effects, and extensive customization options.
+A transparent, customizable rain effect for
+[MyWallpaper](https://github.com/MyWallpapers/MyWallpaper), implemented
+against the canonical Canvas add-on runtime.
 
 ## Features
 
-- **Realistic Rain Simulation** - Smooth Canvas 2D rendering at 60fps
-- **Parallax Depth** - Multiple layers for 3D depth effect
-- **Splash Effects** - Particles and ripples when drops hit the ground
-- **Glow Effects** - Soft glow around raindrops
-- **Wind System** - Adjustable angle with natural variation
-- **Fully Transparent** - Overlays perfectly on any wallpaper
-- **Hot Reload** - See changes instantly
+- **Realistic rain simulation** with smooth Canvas 2D rendering
+- **Glow effects** with adjustable intensity
+- **Wind control** with adjustable angle and variation
+- **Transparent rendering** that overlays any wallpaper
+- **Layer-scoped settings** acknowledged by the host runtime
 
-## Installation
+## Installation and development
 
-1. Download the addon files (`manifest.json` and `index.html`)
-2. Open MyWallpaper and go to **Settings > Addons**
-3. Click **Install from folder** and select the addon directory
-4. Enable the addon on your desktop
+The repository is published through the canonical MyWallpaper add-on
+admission workflow. For local testing:
+
+```bash
+pnpm install
+pnpm dev
+```
+
+For a distributable build:
+
+```bash
+pnpm build
+pnpm test
+```
+
+Use MyWallpaper's developer tools to load the local Vite origin. The release
+bundle is `dist/index.html` plus `dist/assets/addon.js`.
 
 ## Settings
 
-### Rain Settings
-
 | Setting | Description | Default |
 |---------|-------------|---------|
-| Rain Color | Color of the raindrops | `#a8c8e8` |
-| Rain Intensity | Number of raindrops (100-2000) | 800 |
-| Fall Speed | How fast the rain falls (0.5-3x) | 1.2 |
-| Drop Length | Length of rain streaks (5-50px) | 20 |
-| Drop Width | Thickness of raindrops (0.5-4px) | 1.5 |
+| Rain color | Color of the raindrops | `#a8c8e8` |
+| Rain intensity | Number of raindrops (100–50000) | 200 |
+| Fall speed | How fast the rain falls (0.5–3x) | 1.7 |
+| Drop length | Length of rain streaks (5–50px) | 42 |
+| Drop width | Thickness of raindrops (0.5–4px) | 0.8 |
+| Wind angle | Angle of rain (-45–45 degrees) | -5 |
+| Wind variation | Random variation in wind direction | 0 |
+| Opacity | Transparency of raindrops (0.1–1) | 0.6 |
+| Enable glow | Add a soft glow effect | On |
+| Glow intensity | Brightness of the glow (0.1–1) | 0.3 |
 
-### Wind & Direction
-
-| Setting | Description | Default |
-|---------|-------------|---------|
-| Wind Angle | Angle of rain (-45 to 45 degrees) | 10 |
-| Wind Variation | Random variation in wind direction | 5 |
-
-### Visual Effects
-
-| Setting | Description | Default |
-|---------|-------------|---------|
-| Enable Splash | Show splash when drops hit ground | On |
-| Splash Intensity | Size and visibility of splashes | 1.0 |
-| Enable Glow | Add soft glow to raindrops | On |
-| Glow Intensity | Brightness of glow effect | 0.3 |
-
-### Advanced
-
-| Setting | Description | Default |
-|---------|-------------|---------|
-| Depth Layers | Parallax depth layers (1-5) | 3 |
-
-## Performance Tips
-
-- Lower **Rain Intensity** for better performance on older hardware
-- Reduce **Depth Layers** to decrease CPU usage
-- Disable **Splash Effect** or **Glow** if experiencing lag
+Lower **Rain intensity** or disable **Enable glow** if the layer needs less
+CPU usage.
 
 ## License
 
 MIT License
-
-## Credits
-
-Created for the MyWallpaper Addon SDK v2.13.0
