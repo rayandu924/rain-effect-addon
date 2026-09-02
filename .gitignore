@@ -12,7 +12,6 @@ node_modules/
 # Build artifacts (the immutable distributable is part of the release input)
 !dist/
 dist/*
-!dist/index.html
 !dist/assets/
 !dist/assets/**
 build/
